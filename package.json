@@ -1,0 +1,18 @@
+{
+  "name": "12contrib",
+  "version": "1.0.0",
+  "description": "show want help issue. Japanese only",
+  "main": "index.js",
+  "dependencies-dev": {
+    "pug": "^2.0.4",
+    "pug-cli": "^1.0.0-alpha6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "pug src --hierarchy -o public",
+    "dev": "pug src --hierarchy -o public -P -w"
+  },
+  "author": "",
+  "license": "MIT"
+}

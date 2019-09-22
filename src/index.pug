@@ -1,0 +1,109 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        title 12 contrib!
+        link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css')
+        script(defer, src='https://use.fontawesome.com/releases/v5.3.1/js/all.js')
+        script(src='https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js')
+        script(src='https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/ja.js')
+    body
+        section.hero.is-primary
+            .hero-body
+                .container
+                    h1.title
+                        | 12contrib!
+                    h2.subtitle
+                        | 日本語で参加できそうなGithubのIssueを集めました
+        section.container#app
+            div
+                .box
+                    p プログラミング言語で絞り込みができます
+                    .control
+                        label.radio(v-for='lang in languages')
+                            input(type='radio', v-model='language', name='lang', :value='lang.name')
+
+                            |  {{lang.name}}
+                .box(v-for='item in filtered_items')
+                    article.media
+                        .media-left
+                            .has-text-centered
+                                i.fas.fa-star.fa-3x
+                                br
+                                | {{item.stargazers_count}} スター
+                            br
+                            .tags
+                                .tag
+                                    | # {{item.number}}
+
+                                .tag
+                                    i.far.fa-comment
+                                    |  {{item.comments}}
+
+                        .media-content
+
+                            .content
+                                small {{moment(item.updated_at).fromNow()}}
+                                br
+                                .tags
+                                    .tag(v-for='label in item.labels', :style='{background:"#"+label.color, color:"white"}') {{label.name}}
+
+                                p
+                                    small
+                                        a(:href='item.html_url.replace(/\\/issues\\/\\d+$/, "")', target='_blank') {{item.html_url.replace("https://github.com/", "").replace(/\/issues\/\d+$/, "")}}
+                                    strong  {{item.description}}
+                                    br
+                                    a(:href='item.html_url', target='_blank') {{item.title}}
+                                    br
+
+                                    .tags
+                                        .tag(v-for='(val, key) in item.languages') {{key}}
+
+
+        script.
+            var vm = new Vue({
+                el: "#app",
+                computed: {
+                    filtered_items() {
+                        var self = this;
+                        var filterd = this.items.filter(function (item) {
+                            if (!item.languages) {
+                                return false;
+                            }
+                            if(!self.language) {
+                                return item;
+                            }
+                            if (Object.keys(item.languages).filter(function (lang) {
+
+                                return lang == self.language
+                            }).length) {
+                                return item;
+                            }
+                        })
+                        console.log(filterd)
+                        return filterd
+                    }
+                },
+                data: {
+                    items: [],
+                    languages: [],
+                    moment: moment,
+                    language: ""
+                },
+                mounted() {
+                    var self = this;
+                    axios
+                        .get('languages.json')
+                        .then(function (res) {
+                            vm.languages = res.data;
+                        });
+                    axios
+                        .get('list.json')
+                        .then(function (res) {
+                            vm.items = res.data;
+                        });
+                }
+            })
