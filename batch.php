@@ -73,7 +73,7 @@ foreach (preg_split("//u", 'いんかし', -1, PREG_SPLIT_NO_EMPTY) as $char) {
         }
         unset($json);
         unset($response);
-        seep(5);
+        sleep(5);
     }
 }
 
