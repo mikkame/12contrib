@@ -5,6 +5,9 @@ jobs:
       - image: circleci/php
     steps:
       - checkout
+      - add_ssh_keys:
+        fingerprints:
+          - "7a:db:bc:00:21:97:19:20:1c:9e:18:78:29:0c:2f:fd"
       - run: php batch.php
       - run: git clone -b gh-pages git@github.com:mikkame/12contrib.git
       - run: rm -rf 12contrib/*
