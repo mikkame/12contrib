@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>12 contrib!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/ja.js"></script>
+  </head>
+  <body>
+    <section class="hero is-primary">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">12contrib!</h1>
+          <h2 class="subtitle">日本語で参加できそうなGithubのIssueを集めました</h2>
+        </div>
+      </div>
+    </section>
+    <section class="container" id="app">
+      <div>
+        <div class="box">
+          <p>プログラミング言語で絞り込みができます</p>
+          <div class="control">
+            <label class="radio" v-for="lang in languages">
+              <input type="radio" v-model="language" name="lang" :value="lang.name"> {{lang.name}}
+            </label>
+          </div>
+        </div>
+        <div class="box" v-for="item in filtered_items">
+          <article class="media">
+            <div class="media-left">
+              <div class="has-text-centered"><i class="fas fa-star fa-3x"></i><br>{{item.stargazers_count}} スター</div><br>
+              <div class="tags">
+                <div class="tag"># {{item.number}}</div>
+                <div class="tag"><i class="far fa-comment"></i> {{item.comments}}</div>
+              </div>
+            </div>
+            <div class="media-content">
+              <div class="content"><small>{{moment(item.updated_at).fromNow()}}</small><br>
+                <div class="tags">
+                  <div class="tag" v-for="label in item.labels" :style="{background:&quot;#&quot;+label.color, color:&quot;white&quot;}">{{label.name}}</div>
+                </div>
+                <p><small><a :href="item.html_url.replace(/\/issues\/\d+$/, &quot;&quot;)" target="_blank">{{item.html_url.replace("https://github.com/", "").replace(/\/issues\/\d+$/, "")}}</a></small><strong> {{item.description}}</strong><br><a :href="item.html_url" target="_blank">{{item.title}}</a><br>
+                  <div class="tags">
+                    <div class="tag" v-for="(val, key) in item.languages">{{key}}</div>
+                  </div>
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <script>
+      var vm = new Vue({
+          el: "#app",
+          computed: {
+              filtered_items() {
+                  var self = this;
+                  var filterd = this.items.filter(function (item) {
+                      if (!item.languages) {
+                          return false;
+                      }
+                      if(!self.language) {
+                          return item;
+                      }
+                      if (Object.keys(item.languages).filter(function (lang) {
+      
+                          return lang == self.language
+                      }).length) {
+                          return item;
+                      }
+                  })
+                  console.log(filterd)
+                  return filterd
+              }
+          },
+          data: {
+              items: [],
+              languages: [],
+              moment: moment,
+              language: ""
+          },
+          mounted() {
+              var self = this;
+              axios
+                  .get('languages.json')
+                  .then(function (res) {
+                      vm.languages = res.data;
+                  });
+              axios
+                  .get('list.json')
+                  .then(function (res) {
+                      vm.items = res.data;
+                  });
+          }
+      })
+    </script>
+  </body>
+</html>
