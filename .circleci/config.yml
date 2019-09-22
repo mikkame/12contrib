@@ -14,8 +14,8 @@ jobs:
     machine: true
     steps:
       - add_ssh_keys:
-        fingerprints:
-          - "7a:db:bc:00:21:97:19:20:1c:9e:18:78:29:0c:2f:fd"
+          fingerprints:
+              - "7a:db:bc:00:21:97:19:20:1c:9e:18:78:29:0c:2f:fd"
       - attach_workspace:
           at: public
       - run: git clone -b gh-pages git@github.com:mikkame/12contrib.git
