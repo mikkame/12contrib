@@ -6,18 +6,6 @@ jobs:
     steps:
       - checkout
       - run: php batch.php
-      - persist_to_workspace:
-         root: public
-         paths:
-           - ./*
-  deploy:
-    machine: true
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "7a:db:bc:00:21:97:19:20:1c:9e:18:78:29:0c:2f:fd"
-      - attach_workspace:
-          at: public
       - run: git clone -b gh-pages git@github.com:mikkame/12contrib.git
       - run: rm -rf 12contrib/*
       - run: cp -rf public/* 12contrib
@@ -31,6 +19,4 @@ workflows:
           filters:
             branches:
               only: master
-      - deploy:
-          requires:
-            - build
+
